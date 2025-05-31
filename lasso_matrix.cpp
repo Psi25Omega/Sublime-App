@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 
 using namespace std;
 using namespace Eigen;
@@ -30,7 +31,7 @@ VectorXd lasso(const MatrixXd& X, const VectorXd& y, double lambda)
         VectorXd gradient = 2*X.transpose()*error;
 
         for (int j = 0; j < p - 1; ++j) {
-            gradient(j) += lambda * ((beta(j) >= 0) ? 1 : -1);
+            gradient(j) += lambda*((beta(j) >= 0) ? 1 : -1);
         }
 
         beta -= alpha*gradient; // Entire matrix in one step
@@ -46,6 +47,13 @@ int main() {
         return -1;
     }
 
+    // Skip the first line (headings)
+    string heads;
+    if (!getline(file, heads)) {
+        cerr << "File is empty or missing header." << endl;
+        return -1;
+    }
+
     vector<vector<double>> data;
     string line;
     while (getline(file, line)) {
@@ -53,7 +61,7 @@ int main() {
         stringstream ss(line);
         string token;
         while (getline(ss, token, ',')) {
-            row.push_back(stod(token));
+            row.push_back(stod(token)); // string to double
         }
         if (!row.empty()) data.push_back(row);
     }
@@ -65,14 +73,15 @@ int main() {
     VectorXd y(n);
 
     for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < p - 1; ++j) {
+        for (int j = 0; j < p - 1; ++j)
+        {
             X(i, j) = data[i][j];
         }
         X(i, p - 1) = 1.0; // Intercept
         y(i) = data[i][p - 1];
     }
 
-    double lambda = 0.1;
+    double lambda = 1;
     VectorXd beta = lasso(X, y, lambda);
 
     cout << "Lasso coefficients:" << endl;

@@ -1,3 +1,7 @@
+// This is an example of storing params that are integers
+// We can also have strings. In that case, we will use a struct for each row
+// And our dataset will vector<struct>
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,13 +20,14 @@ vector<int> split(const string & line)
         {
             if (!number.empty())
             {
+                // Append the number obtained so far into result when you encounter a ,
                 result.push_back(stoi(number)); // stoi - string to integer
                 number.clear();
             }
         }
         else
         {
-            number += ch;
+            number += ch; // Add next digit to number. We're parsing digit by digit (as it is in string form)
         }
     }
     if (!number.empty())
@@ -34,7 +39,7 @@ vector<int> split(const string & line)
 
 int main()
 {
-    ifstream file("diabetes.csv");
+    ifstream file("poker-hand-testing.data");
     if (!file.is_open())
     {
         cerr << "Error opening file." << std::endl;
